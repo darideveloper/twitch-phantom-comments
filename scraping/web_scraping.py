@@ -99,22 +99,6 @@ class WebScraping ():
                 cookie["expiry"] = int(cookie["expirationDate"])
                 del cookie["expirationDate"]
 
-            # add required keys
-            # if not "sameSite" in cookie or cookie["sameSite"] == 'no_restriction':
-            #     cookie["sameSite"] = "None"
-            
-            # if cookie["sameSite"] == "unspecified":
-            #     cookie["sameSite"] = "Lax"
-
-            # # remove unnecessary keys
-            # delete_keys = ["session", "storeId", "id", "hostOnly"]
-            # for key in delete_keys:
-            #     if key in cookie:
-            #         del cookie[key]            
-
-            # if cookie["domain"].startswith("."):
-            #     cookie["domain"] = cookie["domain"][1:]
-
             cookies_formatted.append(cookie)
 
         for cookie in cookies_formatted:
