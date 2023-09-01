@@ -124,3 +124,7 @@ class Bot ():
             for _ in range (BOTS_STREAM): 
                 thread_obj = Thread (target=self.__start_bot__, args=(stream,))
                 thread_obj.start ()
+                
+if __name__ == "__main__":
+    bot = Bot ()
+    bot.start_bots ()

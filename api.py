@@ -15,8 +15,10 @@ class Api ():
     
     def __init__ (self):
         self.proxies = []
+        self.comments = {}
         
-        self.__load_proxies__ ()     
+        self.__load_proxies__ ()
+        self.__load_comments__ ()
         
     def __load_proxies__ (self):
         """ Query proxies from the webshare api, and save them
@@ -41,6 +43,33 @@ class Api ():
         except Exception as error:
             print (f"{LOGS_PREFIX} Error getting proxies: {error}")
             quit ()
+            
+    def __load_comments__ (self): 
+        """ Query comments from the API, and save them 
+        """
+        
+        print (f"{LOGS_PREFIX} Loading comments...")
+        
+        # Get data from api
+        res = requests.get (
+            f"{API_HOST}/comments/comments/",
+            headers={"token": TOKEN_COMMENTS}
+        )
+        res.raise_for_status ()
+        res_json = res.json ()
+        
+        # Filter only active comments
+        comments = list(filter (lambda comment: 
+            comment["is_active"], 
+        res_json["data"]))
+        
+        # Format comments
+        comments = list(map (lambda comment: {
+           "mod_comment": comment["category"], 
+            "comments": comment["comments"].split ("\r\n"),
+        }, comments))
+        
+        self.comments = comments        
             
     def get_users (self) -> list:
         """ users and passwords from the API
@@ -155,3 +184,14 @@ class Api ():
         json_data = res.json ()
         if json_data["status"] != "ok":
             print (f"{LOGS_PREFIX} Error disabling user: {json_data['message']}")
+
+    # def get_random_comment (self, mod_comment:str): 
+    #     """ Get a random comment from options in database
+
+    #     Args:
+    #         mod_comment (str): comment sent by mod
+    #     """
+        
+    #     print (f"\t{LOGS_PREFIX} Disabling user {user_name}...")
+        
+        
