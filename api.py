@@ -155,14 +155,3 @@ class Api ():
         json_data = res.json ()
         if json_data["status"] != "ok":
             print (f"{LOGS_PREFIX} Error disabling user: {json_data['message']}")
-
-if __name__ == "__main__":
-    
-    api = Api ()
-    users = api.get_users ()
-    proxy = api.get_proxy ()
-    streams = api.get_streams ()
-    disabled_user = random.choice (users)
-    api.disable_user (disabled_user["id"], disabled_user["user"])
-    
-    print ()

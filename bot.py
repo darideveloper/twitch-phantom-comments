@@ -21,28 +21,13 @@ class Bot ():
                 
         # Connect with api
         self.api = Api ()
-        self.streams = self.api.get_streams ()
-        
-        # Get users 
-        self.users = self.api.get_users ()
+        self.streams = []
+        self.users = []
         
         # Css selectors
         self.selectors = {
             'login_btn': '[data-a-target="login-button"]',
         }
-        
-        if not self.streams:
-            print (f"{LOGS_PREFIX} No streams available")
-            return None
-        
-        # Start each bot in thread
-        for stream in self.streams:
-            
-            print (f"\n{LOGS_PREFIX} Starting {BOTS_STREAM} bots in stream {stream['streamer']}\n")
-            
-            for _ in range (BOTS_STREAM): 
-                thread_obj = Thread (target=self.__start_bot__, args=(stream,))
-                thread_obj.start ()
         
     def __start_bot__ (self, stream:dict):
         """ Start chrome in chat page with user cookies and proxy,
@@ -114,6 +99,28 @@ class Bot ():
         # Wait until stream ends
         sleep (running_seconds)
         scraper.end_browser ()
+    
+    def __update_api__ (self): 
+        """ Update api users and streams """
         
-if __name__ == "__main__":
-    Bot ()
+        self.streams = self.api.get_streams ()
+        self.users = self.api.get_users ()
+    
+    def start_bots (self): 
+        """ Auto start all required bots """
+        
+        self.__update_api__ () 
+        
+        # Validate if there are streams   
+        if not self.streams:
+            print (f"{LOGS_PREFIX} No streams available")
+            return None
+  
+        # Start each bot in thread
+        for stream in self.streams:
+            
+            print (f"\n{LOGS_PREFIX} Starting {BOTS_STREAM} bots in stream {stream['streamer']}\n")
+            
+            for _ in range (BOTS_STREAM): 
+                thread_obj = Thread (target=self.__start_bot__, args=(stream,))
+                thread_obj.start ()
