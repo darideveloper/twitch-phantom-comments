@@ -65,7 +65,7 @@ class Api ():
         
         # Format comments
         comments = list(map (lambda comment: {
-           "mod_comment": comment["category"], 
+            "mod_comment": comment["category"], 
             "comments": comment["comments"].split ("\r\n"),
         }, comments))
         
@@ -185,13 +185,22 @@ class Api ():
         if json_data["status"] != "ok":
             print (f"{LOGS_PREFIX} Error disabling user: {json_data['message']}")
 
-    # def get_random_comment (self, mod_comment:str): 
-    #     """ Get a random comment from options in database
+    def get_random_comment (self, mod_comment:str): 
+        """ Get a random comment from options in database
 
-    #     Args:
-    #         mod_comment (str): comment sent by mod
-    #     """
+        Args:
+            mod_comment (str): comment sent by mod
+        """
         
-    #     print (f"\t{LOGS_PREFIX} Disabling user {user_name}...")
+        comments = list(filter (lambda comment: 
+            comment["mod_comment"] == mod_comment, 
+        self.comments))[0]
+                
+        if not comments:
+            return ""
         
+        random_comment = random.choice (comments["comments"])
         
+        return random_comment
+    
+    

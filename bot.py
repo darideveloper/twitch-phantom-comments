@@ -16,11 +16,11 @@ LOGS_PREFIX = "(bots)"
 class Bot (): 
     
     scrapers = {}
+    api = Api ()
     
     def __init__ (self): 
                 
         # Connect with api
-        self.api = Api ()
         self.streams = []
         self.users = []
         
@@ -48,7 +48,7 @@ class Bot ():
         # Get random user and proxy
         user = random.choice (self.users)
         self.users.remove (user)
-        proxy = self.api.get_proxy ()
+        proxy = Bot.api.get_proxy ()
         
         print (f"{LOGS_PREFIX} Starting bot with user {user['user']}")
         
@@ -77,7 +77,7 @@ class Bot ():
             
             # Disable user and debug error    
             print (f"{LOGS_PREFIX} Error login with user {user['user']}")
-            self.api.disable_user (user['id'])
+            Bot.api.disable_user (user['id'])
             return None
         
         # Open stream chat
@@ -103,8 +103,25 @@ class Bot ():
     def __update_api__ (self): 
         """ Update api users and streams """
         
-        self.streams = self.api.get_streams ()
-        self.users = self.api.get_users ()
+        self.streams = Bot.api.get_streams ()
+        self.users = Bot.api.get_users ()
+        
+    def __send_comment__ (self, user:str, scraper:WebScraping, comment:str): 
+        """ Send comment with scraper
+        
+        Args: 
+            user (str): user name
+            scraper (WebScraping): scraper instance
+            comment (str): comment to send
+        """
+        
+        # Random wait time
+        sleep (random.randint (1, 5))
+        
+        print (f"\t* {LOGS_PREFIX} Sending comment with bot {user}: {comment}")
+        
+        # TODO: send comment
+        # scraper.send_comment (random_comment)
     
     def start_bots (self): 
         """ Auto start all required bots """
@@ -124,7 +141,24 @@ class Bot ():
             for _ in range (BOTS_STREAM): 
                 thread_obj = Thread (target=self.__start_bot__, args=(stream,))
                 thread_obj.start ()
+    
+    @classmethod
+    def send_comments (self, mod_comment:str, mod:str): 
+        """ Send commnt to all bots
+
+        Args:
+            mod_comment (str): comment sent by mod
+            mod (str): mod username
+        """
                 
+        for user, scraper in Bot.scrapers.items ():
+            
+            random_comment = Bot.api.get_random_comment (mod_comment)
+            
+            thread_obj = Thread (target=self.__send_comment__, args=(user, scraper, random_comment))
+            thread_obj.start ()
+            
+
 if __name__ == "__main__":
     bot = Bot ()
     bot.start_bots ()

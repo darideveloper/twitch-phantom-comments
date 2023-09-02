@@ -15,7 +15,6 @@ def start_bots ():
         "message": "Bots started"
     }
     
-    
 @app.post('/comment/')
 def comment ():
     
@@ -32,9 +31,25 @@ def comment ():
         }
         
     # Add comment to queue
-    BOTS_MANAGER.add_comment (mod, comment)
-    
+    BOTS_MANAGER.send_comments (comment, mod)
+
+    return {
+        "status": "ok",
+        "message": "Sending comments"
+    }
 
 if __name__ == "__main__":
-    BOTS_MANAGER = Bot ()
+    # BOTS_MANAGER = Bot ()
+    
+    # # Start new bots instances 
+    # BOTS_MANAGER.start_bots()
+    
+    # from time import sleep 
+    
+    # # Send comment
+    # sleep (20)
+    # comment = ":3"
+    # mod = "daridev99"
+    # BOTS_MANAGER.send_comments (comment, mod)
+    
     app.run(debug=True)
