@@ -17,8 +17,11 @@ class Api ():
         self.proxies = []
         self.comments = {}
         
-        self.__load_proxies__ ()
-        self.__load_comments__ ()
+        if not self.proxies:
+            self.__load_proxies__ ()
+            
+        if not self.comments:
+            self.__load_comments__ ()
         
     def __load_proxies__ (self):
         """ Query proxies from the webshare api, and save them
