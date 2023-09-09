@@ -42,21 +42,24 @@ def comment ():
 if __name__ == "__main__":
    
     # DEBUG WITHOUT API >>> 
-    BOTS_MANAGER = Bots ()
+    # BOTS_MANAGER = Bots ()
     
-    # Start new bots instances 
-    BOTS_MANAGER.start_bots()
+    # # Start new bots instances 
+    # BOTS_MANAGER.start_bots()
     
-    # # DEBUG: test send comment
-    from time import sleep
-    sleep (80)
+    # # # DEBUG: test send comment
+    # from time import sleep
+    # sleep (80)
     
-    # Test comment
-    stramer = "Kiingyeye".lower()
-    id_mod = 3
-    mod_comment = ":3"
-    BOTS_MANAGER.send_comments (stramer, id_mod, mod_comment)
+    # # Test comment
+    # stramer = "Kiingyeye".lower()
+    # id_mod = 3
+    # mod_comment = ":3"
+    # BOTS_MANAGER.send_comments (stramer, id_mod, mod_comment)
     # <<< DEBUG WITHOUT API 
     
-    # BOTS_MANAGER = Bot ()
-    # app.run(debug=True)
+    # Initialize bots manager
+    BOTS_MANAGER = Bots ()
+    
+    # Start flask app
+    app.run(debug=True)
