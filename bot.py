@@ -9,6 +9,8 @@ from scraping.web_scraping import WebScraping
 load_dotenv ()
 BOTS_STREAM = int(os.getenv ("BOTS_STREAM"))
 CHROME_FOLDER = os.getenv ("CHROME_FOLDER")
+MIN_WAIT = int(os.getenv ("MIN_WAIT"))
+MAX_WAIT = int(os.getenv ("MAX_WAIT"))
 
 LOGS_PREFIX = "(bots)"
 
@@ -150,7 +152,7 @@ class Bot (WebScraping):
         print (f"{LOGS_PREFIX} Sending comment with bot {self.bot_name} in stream {self.streamer}: {self.comment_bot}...")
         
         # Random wait time
-        sleep (random.randint (1, 5))
+        sleep (random.randint (MIN_WAIT, MAX_WAIT))
         
         # Validate if constrols are visible
         comment_textarea_visible = self.get_elems (Bot.selectors["comment_textarea"])
