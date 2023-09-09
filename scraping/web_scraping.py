@@ -684,3 +684,7 @@ class WebScraping ():
         
         script = f"window.localStorage.setItem('{key}', '{value}')"
         self.driver.execute_script (script)
+        
+    def __str__ (self):
+        
+        return f"WebScraping ({self.__web_page__})"

@@ -1,7 +1,8 @@
 from flask import Flask, request
-from bot import Bot
+from bots import Bots
 
 app = Flask(__name__)
+BOTS_MANAGER = None
 
 @app.get('/')
 def start_bots (): 
@@ -41,27 +42,21 @@ def comment ():
 if __name__ == "__main__":
    
     # DEBUG WITHOUT API >>> 
-    # BOTS_MANAGER = Bot ()
+    BOTS_MANAGER = Bots ()
     
-    # # Start new bots instances 
-    # BOTS_MANAGER.start_bots()
+    # Start new bots instances 
+    BOTS_MANAGER.start_bots()
     
     # # DEBUG: test send comment
-    # from time import sleep
-    # sleep (30)
+    from time import sleep
+    sleep (40)
     
-    # # # Test invalid comment
-    # # stramer = "pipevillanu3va"
-    # # mod = "daridev99"
-    # # mod_comment = "holiii"
-    # # BOTS_MANAGER.send_comments (stramer, mod, mod_comment)
-    
-    # # Test valid comment
-    # stramer = "aristoristo"
-    # id_mod = 3
-    # mod_comment = ":3"
-    # BOTS_MANAGER.send_comments (stramer, id_mod, mod_comment)
+    # Test comment
+    stramer = "Kiingyeye".lower()
+    id_mod = 3
+    mod_comment = ":3"
+    BOTS_MANAGER.send_comments (stramer, id_mod, mod_comment)
     # <<< DEBUG WITHOUT API 
     
-    BOTS_MANAGER = Bot ()
-    app.run(debug=True)
+    # BOTS_MANAGER = Bot ()
+    # app.run(debug=True)
