@@ -7,9 +7,6 @@ BOTS_MANAGER = None
 @app.get('/')
 def start_bots (): 
     
-    # Start new bots instances 
-    BOTS_MANAGER.start_bots()
-    
     return {
         "status": "ok",
         "message": "Bots started"
@@ -20,11 +17,12 @@ def comment ():
     
     # Get json data
     data = request.get_json()
+    streamer = data.get ("streamer", "")
     mod = data.get ("mod", "")
     comment = data.get ("comment", "")
     
     # Validate data
-    if "" in [mod, comment]:
+    if "" in [mod, comment, streamer]:
         return {
             "status": "error",
             "message": "Invalid data"
@@ -39,17 +37,27 @@ def comment ():
     }
 
 if __name__ == "__main__":
-    # BOTS_MANAGER = Bot ()
     
-    # # Start new bots instances 
-    # BOTS_MANAGER.start_bots()
+    BOTS_MANAGER = Bot ()
     
-    # from time import sleep 
+    # Start new bots instances 
+    BOTS_MANAGER.start_bots()
     
-    # # Send comment
-    # sleep (20)
-    # comment = ":3"
+    # DEBUG: test send comment
+    from time import sleep
+    sleep (30)
+    
+    # # Test invalid comment
+    # stramer = "pipevillanu3va"
     # mod = "daridev99"
-    # BOTS_MANAGER.send_comments (comment, mod)
+    # mod_comment = "holiii"
+    # BOTS_MANAGER.send_comments (stramer, mod, mod_comment)
     
-    app.run(debug=True)
+    # Test valid comment
+    stramer = "aristoristo"
+    id_mod = 3
+    mod_comment = ":3"
+    BOTS_MANAGER.send_comments (stramer, id_mod, mod_comment)
+    
+    # DEBUG: REACTIVATE
+    # app.run(debug=True)

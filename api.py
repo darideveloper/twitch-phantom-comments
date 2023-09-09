@@ -15,13 +15,35 @@ class Api ():
     
     def __init__ (self):
         self.proxies = []
-        self.comments = {}
+        """ Structure:
+        [
+            {
+                "proxy_address": "127.0.0.1",
+                "port": 80, 
+            },
+            ...
+        ]
+        """
+        
+        self.comments = []      
+        """ Structure:
+        [
+            {
+                "mod_comment": "sample", 
+                "comments": ["sample1", "sample2"]
+                "id": 1,
+            },
+            ...
+        ]
+        """
         
         if not self.proxies:
             self.__load_proxies__ ()
             
         if not self.comments:
             self.__load_comments__ ()
+    
+        print ()
         
     def __load_proxies__ (self):
         """ Query proxies from the webshare api, and save them
@@ -42,11 +64,17 @@ class Api ():
 
         try:
             json_data = res.json ()
-            self.proxies = json_data['results']
+            proxies = json_data['results']
         except Exception as error:
             print (f"{LOGS_PREFIX} Error getting proxies: {error}")
             quit ()
-            
+        
+        # Format proxyes data
+        self.proxies = list(map (lambda proxy: {
+            "proxy_address": proxy["proxy_address"],
+            "port": proxy["port"], 
+        }, proxies))
+        
     def __load_comments__ (self): 
         """ Query comments from the API, and save them 
         """
@@ -70,10 +98,11 @@ class Api ():
         comments = list(map (lambda comment: {
             "mod_comment": comment["category"], 
             "comments": comment["comments"].split ("\r\n"),
+            "id": comment["id"],
         }, comments))
         
         self.comments = comments        
-            
+             
     def get_users (self) -> list:
         """ users and passwords from the API
 
@@ -153,7 +182,19 @@ class Api ():
         Returns:
             list: streamer names.
 
-            Example:  ["DariDeveloper", "darideveloper2"]
+            Example:  
+            [
+                {
+                    "id": 1,
+                    "date": "2023-09-09",
+                    "start_time": "09:07:30",
+                    "end_time": "20:00:00",
+                    "is_active": true,
+                    "streamer": "daridev",
+                    "access_token": "SAMPLE_TOKEN"
+                },
+                ...
+            ]
         """
 
         print(f"{LOGS_PREFIX} Getting streams...")
@@ -188,22 +229,73 @@ class Api ():
         if json_data["status"] != "ok":
             print (f"{LOGS_PREFIX} Error disabling user: {json_data['message']}")
 
-    def get_random_comment (self, mod_comment:str): 
+    def get_random_comment (self, mod_comment:str) -> dict:
         """ Get a random comment from options in database
 
         Args:
             mod_comment (str): comment sent by mod
+            
+        Returns:
+            {
+                "id_comment_mod": 1,
+                "comment": "hello world",
+            }
         """
         
         comments = list(filter (lambda comment: 
-            comment["mod_comment"] == mod_comment, 
-        self.comments))[0]
+            comment["mod_comment"] == mod_comment,
+        self.comments))
                 
         if not comments:
-            return ""
+            return {}
         
+        comments = comments[0]
+        
+        # Chose a comment from the list
         random_comment = random.choice (comments["comments"])
         
-        return random_comment
+        return {
+            "id_comment_mod": comments["id"],
+            "comment": random_comment,
+        }
     
+    def save_comment_history (self, id_stream:int, id_bot:int, id_comment_mod:int, 
+                              comment_bot:str, id_mod:int ):
+        """ Save comment sent by bot in the API
+
+        Args:
+            id_stream (int): id stream
+            id_bot (int): id bot
+            id_comment_mod (int): id of comments relation
+            comment_bot (str): comment sent by bot
+            id_mod (int): id of the mod that sent initial the comment
+        """
+        
+        res = requests.post (
+            f"{API_HOST}/comments/comments-history/",
+             headers={"token": TOKEN_COMMENTS},
+            json={
+                "stream": id_stream,
+                "bot": id_bot,
+                "comment_mod": id_comment_mod,
+                "comment_bot": comment_bot,
+                "mod": id_mod,
+            },
+        )
+        
+        json_data = res.json ()
+        if json_data["status"] == "ok":
+            print (f"{LOGS_PREFIX} Comment saved in history")
+        else:
+            print (f"{LOGS_PREFIX} Error saving comment history: {json_data['message']}")
+        
+# if __name__ == "__main__":
+#     api = Api ()
+#     api.save_comment_history (
+#         id_stream=13,
+#         id_bot=20,
+#         id_comment_mod=10,
+#         comment_bot=":3",
+#         id_mod=3
+#     )
     
