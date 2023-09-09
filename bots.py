@@ -1,5 +1,6 @@
 import os
 import random
+from time import sleep
 from dotenv import load_dotenv
 from api import Api
 from bot import Bot
@@ -7,9 +8,9 @@ from threading import Thread
 
 load_dotenv ()
 BOTS_STREAM = int(os.getenv ("BOTS_STREAM"))
-CHROME_FOLDER = os.getenv ("CHROME_FOLDER")
+BOTS_IN_GROUP = int(os.getenv ("BOTS_IN_GROUP"))
 
-LOGS_PREFIX = "Bots Manager"
+LOGS_PREFIX = "(Bots Manager)"
 
 class Bots ():
     
@@ -47,26 +48,60 @@ class Bots ():
                 print (f"{LOGS_PREFIX} No users available")
                 return None            
             
-            # Get random user and proxy
-            user = random.choice (users)
-            users.remove (user)
-            proxy = Bot.api.get_proxy ()
-            
-            # Inace bot
-            bot = Bot ()
-            
-            # Start bot in thread
+            # Log bots in stream
             print (f"{LOGS_PREFIX} Starting {BOTS_STREAM} bots in stream {stream['streamer']}\n")
-            for _ in range (BOTS_STREAM): 
-                thread_obj = Thread (target=bot.start_bot, args=(stream, user, proxy))
-                thread_obj.start ()
+            
+            # Create bot groups
+            bot_groups = BOTS_STREAM // BOTS_IN_GROUP
+            for _ in range (bot_groups):
+            
+                group_bots = []
+            
+                for _ in range (BOTS_IN_GROUP): 
+                    
+                    if not users: 
+                        print (f"{LOGS_PREFIX} No more users available")
+                        continue
+           
+                    # Get random user and proxy
+                    user = random.choice (users)
+                    users.remove (user)
+                    proxy = Bot.api.get_proxy ()
+                    
+                    # Inace bot
+                    bot = Bot ()
+                    
+                    # Start bot
+                    thread_obj = Thread (target=bot.start_bot, args=(stream, user, proxy))
+                    thread_obj.start ()
+                        
+                    
+                    # Save bot in group
+                    group_bots.append (bot)
+                    
+                # Wait for bots be ready
+                while True:
+                    bot_no_ready = list (filter (lambda bot: not bot.ready, group_bots))
+                    if bot_no_ready:
+                        sleep (5)
+                        continue
+                    else:
+                        break
+
+                # Filter bot with and without error
+                bots_ready = list (filter (lambda bot: not bot.error, group_bots))
+                bots_error = list (filter (lambda bot: bot.error, group_bots))
                 
-            # Save bot instance
-            streamer = stream["streamer"].lower()
-            if streamer not in self.bots:
-                self.bots[streamer] = []
-                
-            self.bots[streamer].append(bot)
+                # Kill error bots
+                for bot in bots_error:
+                    bot.kill ()
+
+                # Save bot ready instances
+                streamer = stream["streamer"].lower()
+                if streamer not in self.bots:
+                    self.bots[streamer] = []
+                    
+                self.bots[streamer] += bots_ready
     
     def send_comments (self, streamer:str, id_mod:int, mod_comment:str): 
         """ Send commnt to all bots

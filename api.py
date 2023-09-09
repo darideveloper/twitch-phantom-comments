@@ -285,9 +285,7 @@ class Api ():
         )
         
         json_data = res.json ()
-        if json_data["status"] == "ok":
-            print (f"{LOGS_PREFIX} Comment saved in history")
-        else:
+        if json_data["status"] != "ok":
             print (f"{LOGS_PREFIX} Error saving comment history: {json_data['message']}")
         
 # if __name__ == "__main__":

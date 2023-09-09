@@ -49,7 +49,7 @@ if __name__ == "__main__":
     
     # # DEBUG: test send comment
     from time import sleep
-    sleep (40)
+    sleep (80)
     
     # Test comment
     stramer = "Kiingyeye".lower()

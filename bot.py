@@ -51,6 +51,10 @@ class Bot (WebScraping):
         self.comment_bot = ""
         self.id_mod = 0
         
+        # bot status
+        self.ready = False
+        self.error = False
+        
     def start_bot (self, stream:dict, user:dict, proxy:dict):
         """ Start chrome in chat page with user cookies and proxy,
             and keep open until stream ends.
@@ -81,9 +85,12 @@ class Bot (WebScraping):
         
         # Test proxies loading a page
         self.set_page ("https://ipinfo.io/json")
+        self.refresh_selenium ()
         body = self.get_text ("body")
-        if not '"ip":' in body:
+        if not body or not '"ip":' in body:
             print (f"{LOGS_PREFIX} Error loading proxy {proxy['host']}:{proxy['port']}")
+            self.ready = True
+            self.error = True
             return None
         
         # Login with cookies
@@ -92,12 +99,15 @@ class Bot (WebScraping):
         
         # Validate login seaching login button
         self.set_page ("https://www.twitch.tv")
+        self.refresh_selenium ()
         login_button = self.get_elems (Bot.selectors['login_btn'])
         if login_button:
             
             # Disable user and debug error    
             print (f"{LOGS_PREFIX} Error login with user {self.bot_name}")
             Bot.api.disable_user (user['id'])
+            self.ready = True
+            self.error = True
             return None
         
         # Open stream 
@@ -122,6 +132,9 @@ class Bot (WebScraping):
         
         # Save stream id
         self.id_stream = stream["id"]
+        
+        # Update bot status
+        self.ready = True
         
         # Wait until stream ends
         sleep (running_seconds)
@@ -168,15 +181,13 @@ class Bot (WebScraping):
                 
         # Submit donation
         self.refresh_selenium ()
-        # self.click (Bot.selectors["comment_send_btn"])
+        self.click (Bot.selectors["comment_send_btn"])
                 
         warning_text = self.get_text (Bot.selectors["comment_warning_after"])
         if warning_text:
-            print (f"{LOGS_PREFIX} Error: Donation not send: {warning_text}")
+            print (f"{LOGS_PREFIX} Error: comment not send: {warning_text}")
             return False
-            
-        print (f"{LOGS_PREFIX} Comment sent with bot {self.bot_name}: {self.comment_bot}")
-        
+                    
         # Send comment to api
         api.save_comment_history (
             id_stream = self.id_stream,
