@@ -31,7 +31,7 @@ def comment ():
         }
         
     # Add comment to queue
-    BOTS_MANAGER.send_comments (comment, mod)
+    BOTS_MANAGER.send_comments (streamer, mod, comment)
 
     return {
         "status": "ok",
