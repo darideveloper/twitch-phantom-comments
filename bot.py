@@ -119,7 +119,7 @@ class Bot ():
             return None
         
         # Open stream 
-        stramer = stream['streamer']
+        stramer = stream['streamer'].lower()
         chat_link = f"https://www.twitch.tv/{stramer}/"
         self.scraper.set_page (chat_link)
         
