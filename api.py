@@ -13,34 +13,35 @@ LOGS_PREFIX = "(api)"
 
 class Api ():
     
+    proxies = []
+    """ Structure:
+    [
+        {
+            "proxy_address": "127.0.0.1",
+            "port": 80, 
+        },
+        ...
+    ]
+    """
+    
+    comments = []      
+    """ Structure:
+    [
+        {
+            "mod_comment": "sample", 
+            "comments": ["sample1", "sample2"]
+            "id": 1,
+        },
+        ...
+    ]
+    """
+    
     def __init__ (self):
-        self.proxies = []
-        """ Structure:
-        [
-            {
-                "proxy_address": "127.0.0.1",
-                "port": 80, 
-            },
-            ...
-        ]
-        """
         
-        self.comments = []      
-        """ Structure:
-        [
-            {
-                "mod_comment": "sample", 
-                "comments": ["sample1", "sample2"]
-                "id": 1,
-            },
-            ...
-        ]
-        """
-        
-        if not self.proxies:
+        if not Api.proxies:
             self.__load_proxies__ ()
             
-        if not self.comments:
+        if not Api.comments:
             self.__load_comments__ ()
     
         print ()
@@ -70,7 +71,7 @@ class Api ():
             quit ()
         
         # Format proxyes data
-        self.proxies = list(map (lambda proxy: {
+        Api.proxies = list(map (lambda proxy: {
             "proxy_address": proxy["proxy_address"],
             "port": proxy["port"], 
         }, proxies))
@@ -101,7 +102,7 @@ class Api ():
             "id": comment["id"],
         }, comments))
         
-        self.comments = comments        
+        Api.comments = comments        
              
     def get_users (self) -> list:
         """ users and passwords from the API
@@ -170,7 +171,7 @@ class Api ():
         print (f"{LOGS_PREFIX} Getting a random proxy...")
         
         # Get data from api
-        proxy = random.choice (self.proxies)
+        proxy = random.choice (Api.proxies)
         return {
             "host": proxy["proxy_address"],
             "port": proxy["port"],
@@ -244,7 +245,7 @@ class Api ():
         
         comments = list(filter (lambda comment: 
             comment["mod_comment"] == mod_comment,
-        self.comments))
+        Api.comments))
                 
         if not comments:
             return {}
