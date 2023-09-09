@@ -140,7 +140,9 @@ class Bot (WebScraping):
         
         # Wait until stream ends
         sleep (running_seconds)
-        self.self.end_browser ()
+        print (f"{LOGS_PREFIX} Bot {self.bot_name} in stream {stramer} ended")
+        self.kill ()
+        quit ()
     
     def send_comment (self, api:Api): 
         """ Send comment with scraper
