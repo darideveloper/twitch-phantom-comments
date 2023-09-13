@@ -8,7 +8,6 @@ from scraping.web_scraping import WebScraping
 
 load_dotenv ()
 BOTS_STREAM = int(os.getenv ("BOTS_STREAM"))
-CHROME_FOLDER = os.getenv ("CHROME_FOLDER")
 MIN_WAIT = int(os.getenv ("MIN_WAIT"))
 MAX_WAIT = int(os.getenv ("MAX_WAIT"))
 
